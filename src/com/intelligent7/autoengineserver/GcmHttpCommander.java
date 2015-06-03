@@ -69,7 +69,7 @@ public class GcmHttpCommander {
 		mServer.setStopTime(0);
 		//mServer.addFIXDataSniffer(mGcmSender);
 		mServer.start();
-		mServer=new MainServer();
+		//mServer=new MainServer();
 		sPort=config.get("CHAT_PORT");
 		if (sPort != null) {
 			if (mChatMaster==null) mChatMaster=new ChatMaster();
