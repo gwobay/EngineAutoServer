@@ -13,8 +13,11 @@ import java.text.DateFormat;
 import java.util.Date;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.HashMap;
 import java.util.Iterator;
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
 =======
@@ -50,6 +53,7 @@ public class EngineSocket extends Thread
 	int myDatabaseId;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	InetAddress  clientAddr;
 	Logger log;
 	ArrayBlockingQueue<String> socketOutDataQ ;
@@ -60,12 +64,17 @@ public class EngineSocket extends Thread
 =======
 =======
 >>>>>>> origin/master
+=======
+>>>>>>> origin/master
 	 InetAddress  clientAddr;
 	Logger log;
 	ArrayBlockingQueue<String> socketOutDataQ ;
 	ArrayBlockingQueue<String> socketInDataQ ;
 	final int Q_SIZE=200;
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
@@ -74,6 +83,7 @@ public class EngineSocket extends Thread
 	/*
 	 * interface for owner to update my name
 	 * like a tag
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	 * this is for realtime staff
@@ -90,6 +100,8 @@ public class EngineSocket extends Thread
 =======
 =======
 >>>>>>> origin/master
+=======
+>>>>>>> origin/master
 	 * 
 	 */
 	public interface DataUpdateListener //must be a data switch board
@@ -99,6 +111,9 @@ public class EngineSocket extends Thread
 		public void peerSocketDataReady(String myName, String data, String peerName);// later if for byte[] data);
 		}
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
@@ -118,8 +133,12 @@ public class EngineSocket extends Thread
 		socketInDataQ = new ArrayBlockingQueue<String>(Q_SIZE, true);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		//socketOutDataQ = new ArrayBlockingQueue<String>(Q_SIZE, true);
 		friendQ=new HashMap<String, ArrayBlockingQueue<String> >();
+=======
+		socketOutDataQ = new ArrayBlockingQueue<String>(Q_SIZE, true);
+>>>>>>> origin/master
 =======
 		socketOutDataQ = new ArrayBlockingQueue<String>(Q_SIZE, true);
 >>>>>>> origin/master
@@ -130,6 +149,7 @@ public class EngineSocket extends Thread
 		log=Logger.getAnonymousLogger();
 	}
 	
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	public void setOutDataQ(ArrayBlockingQueue<String> newQ)
@@ -177,6 +197,8 @@ public class EngineSocket extends Thread
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
+=======
+>>>>>>> origin/master
 	public void setZippedFlag(boolean T_F) { mySocket.setZippedFlag(T_F);}
 
 	void dropToPeer(String fixLine)
@@ -196,6 +218,7 @@ public class EngineSocket extends Thread
 			}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			//log.info("Broadcasted-> "+fixLine);
 		}
 	}
@@ -204,11 +227,16 @@ public class EngineSocket extends Thread
 =======
 =======
 >>>>>>> origin/master
+=======
+>>>>>>> origin/master
 			log.info("Broadcasted-> "+fixLine);
 		}
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
@@ -228,6 +256,7 @@ public class EngineSocket extends Thread
 				}).start();
 				
 			}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 		}
@@ -257,6 +286,8 @@ public class EngineSocket extends Thread
 =======
 =======
 >>>>>>> origin/master
+=======
+>>>>>>> origin/master
 			log.info("Broadcasted-> "+fixLine);
 		}
 	}
@@ -264,6 +295,9 @@ public class EngineSocket extends Thread
 	void updateMyName()
 	{
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
@@ -273,7 +307,10 @@ public class EngineSocket extends Thread
 			final String dropData=myName;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			final EngineSocket me=this;
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
 =======
@@ -284,7 +321,11 @@ public class EngineSocket extends Thread
 					public void run() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 						aF.engineSocketSignOn(dropData, me);
+=======
+						aF.updateEngineName(dropData);
+>>>>>>> origin/master
 =======
 						aF.updateEngineName(dropData);
 >>>>>>> origin/master
@@ -300,7 +341,11 @@ public class EngineSocket extends Thread
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public void addSwitchServer(DataUpdateListener sniffer)
+=======
+	public void addFixSniffer(DataUpdateListener sniffer)
+>>>>>>> origin/master
 =======
 	public void addFixSniffer(DataUpdateListener sniffer)
 >>>>>>> origin/master
@@ -312,6 +357,7 @@ public class EngineSocket extends Thread
 		sniffers.add(sniffer);
 	}
 	
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	//------------ socket data processing -----------
@@ -337,6 +383,8 @@ public class EngineSocket extends Thread
 		};
 		writeThread.start();
 	}
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
 =======
@@ -374,6 +422,7 @@ public class EngineSocket extends Thread
 		if (readData==null || readData.length < 1) return;
 		
 		String sData=new String(readData);
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 		log.info("got : "+sData);
@@ -425,6 +474,8 @@ public class EngineSocket extends Thread
 =======
 =======
 >>>>>>> origin/master
+=======
+>>>>>>> origin/master
 		if (sData.charAt(0)=='<')
 		{
 			int idx=sData.indexOf('>');
@@ -459,6 +510,9 @@ public class EngineSocket extends Thread
 		}
 		log.info("got : "+sData);
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
@@ -565,6 +619,7 @@ public class EngineSocket extends Thread
 	
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Thread writeThread;
 	public void run()
 	{
@@ -575,6 +630,8 @@ public class EngineSocket extends Thread
 		
 		
 =======
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
 	public void run()
@@ -591,6 +648,9 @@ public class EngineSocket extends Thread
 		
 		respThd.start();
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
@@ -606,9 +666,14 @@ public class EngineSocket extends Thread
 			}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if (writeThread != null)
 			try {
 				writeThread.join();
+=======
+			try {
+				respThd.join();
+>>>>>>> origin/master
 =======
 			try {
 				respThd.join();
@@ -632,7 +697,10 @@ public class EngineSocket extends Thread
 			log.info("server socket closed connection with "+clientAddr);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
 =======
