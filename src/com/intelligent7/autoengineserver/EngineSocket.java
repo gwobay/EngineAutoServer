@@ -106,8 +106,8 @@ public class EngineSocket extends Thread
 		
 	}
 	
-	void doFirstSignOn(String info){ //info= "phone1, phone2@controller"
-		String[] users=info.split("@");
+	void doFirstSignOn(String info){ //info= "phone1, phone2!controller"
+		String[] users=info.split("!");
 		myName=users[0];
 		if (users.length == 1)
 		{
@@ -195,10 +195,7 @@ public class EngineSocket extends Thread
 		}
 	}
 	void updateMyName()
-	{
-		
-
-
+	{		
 		for (int i=0; i< sniffers.size(); i++)
 		{
 			final DataUpdateListener aF=sniffers.get(i);
@@ -281,7 +278,7 @@ public class EngineSocket extends Thread
 		
 		String sData=new String(readData);
 		log.info("got : "+sData);
-				//format "msg"+"<sender, backup-sender@receiver>$" i.e., "...<phone1, phone2@receiver>" from phone 
+				//format "msg"+"<sender, backup-sender!receiver>$" i.e., "...<phone1, phone2!receiver>" from phone 
 		//and only <sim number> from control
 		int iUser=sData.indexOf('<');
 		int idx=sData.indexOf('>');
@@ -305,22 +302,26 @@ public class EngineSocket extends Thread
 			if (myName==null){
 				doFirstSignOn(sender);
 			}
-			String msg=(sData.substring(0, i0x)+"<"+myName+">$");
-			idx=sender.indexOf('@');
+			//time zone must be set in server
+			
+			String msgToMcu=(sData.substring(0, i0x)+"<"+myName+">$");
+			String msgToApp=(sData.substring(0, i0x)+"@"+(new Date()).getTime()+"<"+myName+">$");
+			
+			idx=sender.indexOf('!');
 			if (idx < 0) {
 				//dropToPeer(msg);
 				if (friendQ.size()==0)
 				{
-					myPostOffice.putNewMail(new PostOffice.UnknowReceiverMail(myName, msg));
+					myPostOffice.putNewMail(new PostOffice.UnknowReceiverMail(myName, msgToApp));
 					return;
 				}
-				putMsgInFriendQ(msg);
+				putMsgInFriendQ(msgToApp);
 			}
 			else {
 				//ArrayBlockingQueue<String> myFriendQ=null;
 				String myFriend=sender.substring(idx+1);
 				if (friendQ.size()==0) friendQ.put(myFriend, myPostOffice.getMailBox(myFriend));
-				friendQ.get(myFriend).add(msg);				
+				friendQ.get(myFriend).add(msgToMcu);				
 				//dropToPeer(sender.substring(idx+1), msg);
 			}
 
@@ -431,12 +432,8 @@ public class EngineSocket extends Thread
 		writeThread=null;
 		//mParser=new MessageParser();
 		stopFlag=false;
-		//imChatLine=false;
-		
-		
-
-
-		
+		//imChatLine=false;		
+				
 		while (mySocket.isSktConnected() && mySocket.hasInStream())
 		{
 			if (stopFlag) break;
