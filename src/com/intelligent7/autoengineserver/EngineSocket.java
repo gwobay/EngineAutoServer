@@ -250,6 +250,11 @@ public class EngineSocket extends Thread
 
 	void processData()//byte[] readData)
 	{
+		if (mySocket.isSktClosed())
+		{
+			stopFlag=true;
+			return;
+		}
 		byte[] readData=null;
 		long timeEnd=(new Date()).getTime()+3000;
 		while (readData==null || readData.length < 1)
@@ -264,12 +269,12 @@ public class EngineSocket extends Thread
 				{
 					stopFlag=true;
 					try {
-						sleep(30*1000);
+						sleep(1*1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					mySocket.close();
+					//mySocket.close(); //maybe still writing
 					break;
 				}
 			if ((new Date()).getTime() > timeEnd) break;
@@ -389,23 +394,32 @@ public class EngineSocket extends Thread
 	
 	public void dumpResponse()
 	{
+		boolean hasMore=true;
 		while (mySocket.isSktConnected() && mySocket.hasOutStream() ||
 				socketOutDataQ.size() > 0)
 		{			
 			String socketData=null;
-			try {
+			try 
+			{
 				if (socketOutDataQ.size() > 0) 
-					socketData=socketOutDataQ.poll(200, TimeUnit.MILLISECONDS);
-				else
-					socketData = socketOutDataQ.take();
-				} catch (InterruptedException e1) {
+				{
+					hasMore=true;
+					socketData=socketOutDataQ.poll(100, TimeUnit.MILLISECONDS);
+				}
+				else 
+				{
+					hasMore=false;
+					socketData = socketOutDataQ.poll(3000, TimeUnit.MILLISECONDS);//socketOutDataQ.take();
+					}
+			} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					e1.printStackTrace();					
 				}
 			
 			if (socketData != null)
 			{
 				int iTry = 0;
+				hasMore=true;
 				String data=new String(socketData);
 				while (!mySocket.sendText(socketData)){
 					try {
@@ -421,7 +435,8 @@ public class EngineSocket extends Thread
 					}
 				}
 				log.info("resp: "+data);
-			}		
+			}
+			if (!hasMore) return;//should send a bye signal out
 		}
 			
 	}

@@ -126,11 +126,27 @@ public class SimpleSocket extends Socket {
 
 	protected boolean hasInStream()
 	{
+		if (mSocket==null)
+			return false;
+		try {
+			mIn=mSocket.getInputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return false;
+		}
 		return (mIn != null);
 	}
 	
 	protected boolean hasOutStream()
 	{
+		if (mSocket==null)
+			return false;
+		try {
+			mOut=mSocket.getOutputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return false;
+		}
 		return (mOut != null);
 	}
 	
@@ -331,20 +347,12 @@ public class SimpleSocket extends Socket {
 		int iTotalRead=0;
 		byte[] totalRead=new byte[200000];
 		int iTry=0;
-		while (needToRead)
-		{
-			if (iTry < 1) iHad=readRawData(totalRead);
-			else iHad=readRawData(tmp1);
-			if (iHad<0) { 
-				readFlag=iHad; 						
+		iTotalRead=readRawData(totalRead);
+			if (iTotalRead<0) { 
+				readFlag=iTotalRead; 						
 						return null;
-					}
-			if (iHad==0) break;
-			if (iTry > 1) totalRead=merge2(totalRead, tmp1, iTotalRead, iHad);
-			iTotalRead += iHad;
-			iTry++;	
-			iHad += left_length;
-		}
+			}
+			
 		byte[] retB=new byte[iTotalRead];
 		System.arraycopy(totalRead, 0, retB, 0, iTotalRead);
 		return retB;

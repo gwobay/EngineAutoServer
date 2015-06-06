@@ -115,18 +115,21 @@ public PostOffice myPostOffice;
         	try {
         			newUser = serverSocket.accept();
             } catch (SocketTimeoutException e) {
-        		stopNow=true;
-        		System.err.println("To stop now.");
-        		break;
+        		//stopNow=true;
+        		System.err.print("alive!!");
+        		//break;
         	} catch (IOException e) {
                 	System.err.println("Accept failed.");
-                	if (newUser==null) continue;
+                	System.err.println(e.getMessage());
+                	//if (newUser==null) continue;
                 }
         	
+        	if (newUser!=null){
         
-        System.out.println("Got call from "+newUser.getRemoteSocketAddress().toString());
-        
-        myPostOffice.addNewSocket(newUser);
+	        System.out.println("Got call from "+newUser.getRemoteSocketAddress().toString());
+	        
+	        myPostOffice.addNewSocket(newUser);
+        	}
         	
         } //while ((new Date()).getTime() < mStopTime || mStopTime==0);
 
