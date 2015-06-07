@@ -366,7 +366,7 @@ public class EngineSocket extends Thread
 			dropToPeer(sData);
 		}
 		*/
-		log.info("got : "+sData);
+		//log.info("got : "+sData);
 
 
 		

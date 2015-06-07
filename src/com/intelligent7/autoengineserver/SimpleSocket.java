@@ -179,6 +179,7 @@ public class SimpleSocket extends Socket {
 	
 	// ----------------- READ -------------------------//
 	static final int maxRead=20000;
+	boolean wasMarked=false;
 	int readRawData(byte[] dataBuffer)
 	{
 		try {
@@ -187,6 +188,7 @@ public class SimpleSocket extends Socket {
 		int iRead;
 		try{	
 			if (mIn == null) mIn=mSocket.getInputStream();
+			//else if (wasMarked) {mIn.reset();}
 			iRead=mIn.read(dataBuffer, 0, dataBuffer.length);
 			if (iRead < 0) {
 				readFlag=BAD_READ; 
@@ -199,7 +201,10 @@ public class SimpleSocket extends Socket {
 			{
 				return BAD_STREAM;
 			}
-	
+		//if (mIn.markSupported()){
+			//mIn.mark(10000);
+			//wasMarked=true;
+		//}
 		return iRead;
 	}
 	
@@ -355,6 +360,8 @@ public class SimpleSocket extends Socket {
 			
 		byte[] retB=new byte[iTotalRead];
 		System.arraycopy(totalRead, 0, retB, 0, iTotalRead);
+		//if (iTotalRead > 0)
+		//System.out.println("Socket just read "+iTotalRead+" bytes!.......");
 		return retB;
 	}
 	
