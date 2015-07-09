@@ -8,12 +8,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.Date;
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.HashMap;
 import java.util.Iterator;
+
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -43,21 +46,28 @@ public class EngineSocket extends Thread
 	String readPage;
 	int totalRead;
 	int myDatabaseId;
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 	InetAddress  clientAddr;
 	Logger log;
 	ArrayBlockingQueue<String> socketOutDataQ ;
 	ArrayBlockingQueue<String> socketInDataQ ;
 	HashMap<String, ArrayBlockingQueue<String> > friendQ ;
 	PostOffice myPostOffice;
-	final int Q_SIZE=200;
-	MessagePrinter myPrinter; //set by the office
+	final int Q_SIZE=20;
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 
 	Vector<DataUpdateListener> sniffers;
 	
 	/*
 	 * interface for owner to update my name
 	 * like a tag
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 	 * this is for realtime staff
 	 * as of now, Post Office scheme will be used for this
 	 */
@@ -70,6 +80,8 @@ public class EngineSocket extends Thread
 		public void peerSocketDataReady(String myName, String data, String peerName);// later if for byte[] data);
 	}
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 
 	
 	/**
@@ -85,6 +97,9 @@ public class EngineSocket extends Thread
 		mySocket = new SimpleSocket(clientSkt);
 		clientAddr=clientSkt.getInetAddress();
 		socketInDataQ = new ArrayBlockingQueue<String>(Q_SIZE, true);
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 		//socketOutDataQ = new ArrayBlockingQueue<String>(Q_SIZE, true);
 		friendQ=new HashMap<String, ArrayBlockingQueue<String> >();
 
@@ -92,6 +107,9 @@ public class EngineSocket extends Thread
 		log=Logger.getAnonymousLogger();
 	}
 	
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 	public void setOutDataQ(ArrayBlockingQueue<String> newQ)
 	{
 		socketOutDataQ=newQ;
@@ -102,26 +120,17 @@ public class EngineSocket extends Thread
 		myPostOffice=new1;
 	}	
 	
-	public void setMyPrinter(MessagePrinter aPrinter){
-		myPrinter=aPrinter;
-	}
-	
 	void setFriendMailBox()
 	{
 		
 	}
 	
-	void doFirstSignOn(String info){ //info= "phone1, phone2!controller"
-		String[] users=info.split("!");
+	void doFirstSignOn(String info){ //info= "phone1, phone2@controller"
+		String[] users=info.split("@");
 		myName=users[0];
 		if (users.length == 1)
 		{
-			myName=myPostOffice.getMatchedName(info);
-			if (myName==null){
-				System.out.println("Cannot find SIM for "+info);
-				return;
-			}
-			socketOutDataQ=myPostOffice.getMailBox(myName);
+			socketOutDataQ=myPostOffice.getMailBox(info);
 			startWriteThread();
 			//no need to wake-up post, the mail for MCU is always in its box
 			String temp=myPostOffice.getPhones(myName);
@@ -205,7 +214,12 @@ public class EngineSocket extends Thread
 		}
 	}
 	void updateMyName()
-	{		
+	{
+		
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+
 		for (int i=0; i< sniffers.size(); i++)
 		{
 			final DataUpdateListener aF=sniffers.get(i);
@@ -217,6 +231,9 @@ public class EngineSocket extends Thread
 			{
 				new Thread(new Runnable(){
 					public void run() {
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 						aF.engineSocketSignOn(dropData, me);
 					}
 				}).start();
@@ -225,12 +242,18 @@ public class EngineSocket extends Thread
 			log.info("Got socket name -> "+myName);
 		}
 	}
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 	public void addSwitchServer(DataUpdateListener sniffer)
 	{
 		if (sniffers==null) sniffers=new Vector<DataUpdateListener>();
 		sniffers.add(sniffer);
 	}
 	
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 	//------------ socket data processing -----------
 	void putMsgInFriendQ(String msg){
 		Iterator<String> itr=friendQ.keySet().iterator();
@@ -238,47 +261,8 @@ public class EngineSocket extends Thread
 		{
 			String key=itr.next();
 			ArrayBlockingQueue<String> aFriend=friendQ.get(key);
-			if (aFriend==null){
-				System.out.println("Something wrong with system key "+key+" has no value");
-				continue;
-			}
-			
-			
-			if (aFriend.remainingCapacity()<1) {
-				final String data=msg;
-			
-				new Thread(new Runnable(){
-					public void run()
-					{
-								
-						System.out.println("Some thing wrong the Q is full!!!");
-						System.out.println("Some thing wrong the Q is full!!!");
-						System.out.println("Some thing wrong the Q will be cut to 1/2!!!");
-						for (int i=0; i<Q_SIZE/2; i++){
-							try {
-								aFriend.take();
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-						System.out.println("Some thing wrong the Q now has "+aFriend.size()+"!!!");
-						try {
-							aFriend.put(data);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}).start();
-			} else {
-				try {
-					aFriend.put(msg);
-					System.out.println("added "+msg+" to "+key+"; has size "+aFriend.size());
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			if (aFriend != null){
+				aFriend.add(msg);
 			}
 		}
 	}
@@ -299,11 +283,6 @@ public class EngineSocket extends Thread
 
 	void processData()//byte[] readData)
 	{
-		if (mySocket.isSktClosed())
-		{
-			stopFlag=true;
-			return;
-		}
 		byte[] readData=null;
 		long timeEnd=(new Date()).getTime()+3000;
 		while (readData==null || readData.length < 1)
@@ -314,29 +293,28 @@ public class EngineSocket extends Thread
 				return;
 				}
 			readData=mySocket.getStreamData();
-			if (readData==null)
-			{
-				if (mySocket.getReadFlag() <0)
+			if (readData==null && mySocket.getReadFlag() <0)
 				{
 					stopFlag=true;
 					try {
-						sleep(1*1000);
+						sleep(30*1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					//mySocket.close(); //maybe still writing
+					mySocket.close();
 					break;
 				}
-				if ((new Date()).getTime() > timeEnd) break;
-			}
+			if ((new Date()).getTime() > timeEnd) break;
 		}
 		if (readData==null || readData.length < 1) return;
 		
 		String sData=new String(readData);
-		//log.info("got : "+sData);
-		myPrinter.printMsg("==>"+sData);
-				//format "msg"+"<sender, backup-sender!receiver>$" i.e., "...<phone1, phone2!receiver>" from phone 
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+		log.info("got : "+sData);
+				//format "msg"+"<sender, backup-sender@receiver>$" i.e., "...<phone1, phone2@receiver>" from phone 
 		//and only <sim number> from control
 		int iUser=sData.indexOf('<');
 		int idx=sData.indexOf('>');
@@ -350,49 +328,39 @@ public class EngineSocket extends Thread
 			String name=sData.substring(1,  idx);
 			if (myName==null){
 				doFirstSignOn(name);
-				if (myName==null)
-				{
-					mySocket.close();
-					stopFlag=true;
-					return;
-				}
-			}
 				return;
+			}
 		} 
 
 			int i0x=iUser;
-			String sender=sData.substring(i0x+1,  idx);
 			
 			if (myName==null){
-				doFirstSignOn(sender);
+				doFirstSignOn(sData.substring(i0x+1,  idx));
 			}
-			//time zone must be set in server
-			
-			String msgToMcu=(sData.substring(0, i0x)+"<"+myName+">$");
-			String msgToApp=(sData.substring(0, i0x)+"@"+(new Date()).getTime()+"<"+myName+">$");
-			
-			idx=sender.indexOf('!');
+			String sender=sData.substring(i0x+1,  idx);
+			String msg=(sData.substring(0, i0x)+"<"+myName+">$");
+			idx=sender.indexOf('@');
 			if (idx < 0) {
 				//dropToPeer(msg);
 				if (friendQ.size()==0)
 				{
-					myPostOffice.putNewMail(new PostOffice.UnknowReceiverMail(myName, msgToApp));
+					myPostOffice.putNewMail(new PostOffice.UnknowReceiverMail(myName, msg));
 					return;
 				}
-				putMsgInFriendQ(msgToApp);
+				putMsgInFriendQ(msg);
 			}
 			else {
 				//ArrayBlockingQueue<String> myFriendQ=null;
 				String myFriend=sender.substring(idx+1);
 				if (friendQ.size()==0) friendQ.put(myFriend, myPostOffice.getMailBox(myFriend));
-				friendQ.get(myFriend).add(msgToMcu);				
+				friendQ.get(myFriend).add(msg);				
 				//dropToPeer(sender.substring(idx+1), msg);
 			}
 
 			//dropToPeer(sData);
 		
 
-		/*if (sData.charAt(0)=='<')
+		if (sData.charAt(0)=='<')
 		{
 			int idx=sData.indexOf('>');
 			if (idx < 0) 
@@ -424,8 +392,7 @@ public class EngineSocket extends Thread
 
 			dropToPeer(sData);
 		}
-		*/
-		//log.info("got : "+sData);
+		log.info("got : "+sData);
 
 
 		
@@ -453,93 +420,67 @@ public class EngineSocket extends Thread
 	
 	public void dumpResponse()
 	{
-		boolean hasMore=true;
-		System.out.println(myName+" has "+socketOutDataQ.size());
 		while (mySocket.isSktConnected() && mySocket.hasOutStream() ||
 				socketOutDataQ.size() > 0)
 		{			
 			String socketData=null;
-			try 
-			{
+			try {
 				if (socketOutDataQ.size() > 0) 
-				{
-					hasMore=true;
-					socketData=socketOutDataQ.poll(100, TimeUnit.MILLISECONDS);
-				}
-				else 
-				{
-					hasMore=false;
-					socketData = socketOutDataQ.poll(3000, TimeUnit.MILLISECONDS);//socketOutDataQ.take();
-					}
-			} catch (InterruptedException e1) {
+					socketData=socketOutDataQ.poll(200, TimeUnit.MILLISECONDS);
+				else
+					socketData = socketOutDataQ.take();
+				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();					
+					e1.printStackTrace();
 				}
 			
 			if (socketData != null)
 			{
 				int iTry = 0;
-				hasMore=true;
 				String data=new String(socketData);
 				while (!mySocket.sendText(socketData)){
 					try {
-						Thread.sleep(800);
+						Thread.sleep(2000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}
-					
-					if (mySocket.isClosed() || iTry++ > 5) 
-					{
-						log.info("failed to send :"+data);
-						try {
-							socketOutDataQ.put(socketData);
-						} catch (InterruptedException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						return;
-					}
-					
-				}
-				//log.info("resp: "+data);
-				myPrinter.printMsg("<<<"+data+" to --- "+myName);
-			}
-			if (!hasMore) {
-				if (mySocket.isSktConnected() && mySocket.hasOutStream())
-				{
-					try {
-						OutputStream os=mySocket.getOutputStream();
-						if (os!=null)
-							os.close();
-					} catch (SocketException e) {
-						// TODO Auto-generated catch block
-						//e.printStackTrace();
-					}catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						if (mySocket.isClosed() || iTry++ > 10) 
+							{
+								log.info("failed to send :"+data);
+								return;
+							}
 					}
 				}
-				return;
-			}
+				log.info("resp: "+data);
+			}		
 		}
 			
 	}
 	
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 	Thread writeThread;
 	public void run()
 	{
 		writeThread=null;
-		//mParser=new MessageParser();
+		mParser=new MessageParser();
 		stopFlag=false;
-		//imChatLine=false;		
-				
+		imChatLine=false;
+		
+		
+
+
+		
 		while (mySocket.isSktConnected() && mySocket.hasInStream())
 		{
 			if (stopFlag) break;
 			processData();//readBytes);
 		}
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 		if (writeThread != null)
 			try {
 				writeThread.join();
@@ -548,16 +489,15 @@ public class EngineSocket extends Thread
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			//if (mParser != null)
-			//mParser.finish();
-			//if (mFDB != null) mFDB.cleanUp();
-			if (mySocket!=null )//&& !imChatLine)
+			if (mParser != null)
+			mParser.finish();
+			if (mFDB != null) mFDB.cleanUp();
+			if (mySocket!=null && !imChatLine)
 				mySocket.close();
-			System.out.println("At "+
-								DateFormat.getTimeInstance().format(new Date())+
-								"server socket closed connection with "+clientAddr);		
+			System.out.println("I am done with processing and closed at "+
+								DateFormat.getTimeInstance().format(new Date()));		
 	
-			//log.info("server socket closed connection with "+clientAddr);
+			log.info("server socket closed connection with "+clientAddr);
 	}
 	/**
 	 * @param arg0

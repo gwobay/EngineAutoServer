@@ -199,6 +199,7 @@ public class SimpleSocket extends Socket {
 			catch(SocketTimeoutException e){return 0;}
 			catch (IOException e)
 			{
+				e.printStackTrace();
 				return BAD_STREAM;
 			}
 		//if (mIn.markSupported()){
@@ -357,7 +358,7 @@ public class SimpleSocket extends Socket {
 				readFlag=iTotalRead; 						
 						return null;
 			}
-			
+		if (iTotalRead==0) return null;	
 		byte[] retB=new byte[iTotalRead];
 		System.arraycopy(totalRead, 0, retB, 0, iTotalRead);
 		//if (iTotalRead > 0)

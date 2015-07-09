@@ -32,6 +32,7 @@ implements EngineSocket.DataUpdateListener {
 	private HashMap<String, EngineSocket > allUsers;
 	private  HashMap<String, ArrayBlockingQueue<String> > allMailBoxes;
 	private  HashMap<String, String> relationBook;
+	private HashMap<String, String> k9Map;
 
 	PostOffice()
 	{
@@ -41,6 +42,11 @@ implements EngineSocket.DataUpdateListener {
 		allUsers=new HashMap<String, EngineSocket >();
 		allMailBoxes=new HashMap<String, ArrayBlockingQueue<String> >();
 		relationBook=new HashMap<String, String>();
+		k9Map=new HashMap<String, String>();
+	}
+	
+	public HashMap<String, String> getK9Map(){
+		return k9Map;
 	}
 	
 	public void addNewSocket(Socket aSkt)
@@ -48,6 +54,7 @@ implements EngineSocket.DataUpdateListener {
 		EngineSocket new1=new EngineSocket(aSkt);
 		//new1.addSwitchServer(this);
 		new1.setMyPostOffice(this);
+		new1.setMyPrinter(myPrinter);
 		new1.start();
 	}
 	
@@ -129,9 +136,23 @@ implements EngineSocket.DataUpdateListener {
 		} finally {
 			mailBoxLock.writeLock().unlock();
 		}
+		System.out.println(forWhom+" has "+mailBox.size()+"mails in mailbox");
 		return mailBox;
 	}
+	public ArrayBlockingQueue<String> getMatchedMailBox(String forWhom)
+	{
+		String sim=k9Map.get(forWhom);
+		if (sim==null){
+			System.out.println("BAD IMSI "+forWhom+" no match");
+			return null;
+		}
+		return getMailBox(sim);
+	}
 	
+	public String getMatchedName(String inName)
+	{
+		return k9Map.get(inName);
+	}
 	public void putNewMail(UnknowReceiverMail new1)
 	{
 		try {
@@ -149,6 +170,7 @@ implements EngineSocket.DataUpdateListener {
 		try {
 			mailBox=allMailBoxes.get(friend);
 		} finally { mailBoxLock.readLock().unlock();		 }
+		System.out.println(friend+" has "+mailBox.size()+"mails in mailbox");
 		return mailBox;
 	}
 	//Post office Updates relation books
@@ -160,26 +182,37 @@ implements EngineSocket.DataUpdateListener {
 		try
 		{
 			String from=relationBook.get(controller);
+			String[] inPhones=phones.split(",");			
 		
-			if (from != null)
+			if (from == null) relationBook.put(controller, phones);
+			else 
 			{
-				if (from.contains(phones)) return;
-				relationBook.put(controller, phones+","+from );
+				boolean hasNewPhone=false;
+				String newList="";
+				for (int i=0; i<inPhones.length; i++)
+				{
+					if (inPhones[i].length()<2) continue;
+					if (from.contains(inPhones[i])) continue;
+					hasNewPhone=true;
+					newList += (inPhones[i]+",");					
+				}
+				if (!hasNewPhone) return;				
+				relationBook.put(controller, newList+from );
 			}
-				else relationBook.put(controller, phones);	
-			
+				 				
 			setQ4Name(controller);
-			String[] newP=phones.split(",");
-			for (int i=0; i<newP.length; i++) 
+			//String[] newP=phones.split(",");
+			for (int i=0; i<inPhones.length; i++) 
 			{				
-						setQ4Name(newP[i]);				
+						setQ4Name(inPhones[i]);				
 			}
 		} finally { lock2.unlock();}
 		
 	}
 
-	public String getPhones(String controller){
-		return relationBook.get(controller);
+	public String getPhones(String iMsi){
+		String iMei=k9Map.get(iMsi);
+		return relationBook.get(iMei);
 	}
 	
 	boolean toStop;
@@ -187,9 +220,13 @@ implements EngineSocket.DataUpdateListener {
 	{
 		toStop=true;
 	}
+	
+	MessagePrinter myPrinter;
 	public void run()
 	{
 		log=Logger.getAnonymousLogger();
+		myPrinter=new MessagePrinter();
+		myPrinter.start();
 		toStop=false;
 		while(!toStop)
 		{
@@ -231,6 +268,8 @@ implements EngineSocket.DataUpdateListener {
 		removeAllUsers();
 		allUsers.clear();
 		allUsers=null;
+		k9Map.clear();
+		k9Map=null;
 	}
 	
 	//----------------------------- build switch --------

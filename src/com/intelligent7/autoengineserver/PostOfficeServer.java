@@ -55,9 +55,11 @@ public class PostOfficeServer extends Thread
 	private static HashMap<String, String> config=new HashMap<String, String>();
 
 int mPort;
+int k9Port;
 long mStopTime;
 Logger log;	
 public PostOffice myPostOffice;
+K9MessageServer k9Mapper;
 	void init()
 	{
 		//mGcmSender=new SendGcmMessager();
@@ -73,6 +75,17 @@ public PostOffice myPostOffice;
 		
 		myPostOffice=new PostOffice();
 		myPostOffice.start();
+		
+        K9MessageServer kServer=new K9MessageServer();
+        HashMap<String, String> k9Map=myPostOffice.getK9Map();
+        if (k9Map==null){
+        	System.out.println("Cannot get K9 mapping; exit");
+        	System.exit(1);
+        }
+        kServer.setK9Map(k9Map);
+        kServer.start();
+        k9Mapper=kServer;
+	
 		
 	}
 
@@ -135,17 +148,22 @@ public PostOffice myPostOffice;
 
                 try {
                         serverSocket.close();
+                        if (k9Mapper != null){
+                        	k9Mapper.shutdown();
+                        }
                         if (myPostOffice != null)
                         {
                         	myPostOffice.shutdown();
                         	myPostOffice.interrupt(); 
+                        }
                         	try {
 								myPostOffice.join();
+								k9Mapper.join();
 							} catch (InterruptedException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-                        }
+                        
                 } catch (IOException e) {}
         return ;
     }
@@ -158,6 +176,8 @@ public PostOffice myPostOffice;
         PostOfficeServer aServer=new PostOfficeServer();
         aServer.init();
         aServer.start();
+        
+        
                 
         try {           		
             aServer.join();
